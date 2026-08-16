@@ -8,52 +8,12 @@
   <h1>🛰️ PRAHARI</h1>
   <h2>Predictive Radiation Hazard Alert & Resilience Intelligence</h2>
   <p><i>An Advanced Deep Learning Early-Warning System for Space Weather Threats at Geostationary Orbit</i></p>
-  <p><b>Developed for ISRO Problem Statement 14</b></p>
+  <p><b>Developed for ISRO Problem</b></p>
 </div>
 
 ---
 
-## 📑 Table of Contents
-1. [Executive Summary](#1-executive-summary)
-2. [ISRO Problem Statement 14 Overview](#2-isro-problem-statement-14-overview)
-3. [The Threat Landscape: Physics of Space Weather](#3-the-threat-landscape-physics-of-space-weather)
-    - [Coronal Mass Ejections (CMEs) & Solar Wind](#coronal-mass-ejections-cmes--solar-wind)
-    - [The Killer Electrons (>2 MeV)](#the-killer-electrons-2-mev)
-    - [Deep-Dielectric Charging: The Silent Satellite Killer](#deep-dielectric-charging-the-silent-satellite-killer)
-    - [Real-World Catastrophes](#real-world-catastrophes)
-4. [The PRAHARI Solution](#4-the-prahari-solution)
-    - [Why PRAHARI?](#why-prahari)
-    - [Unique Innovation vs. Traditional Models](#unique-innovation-vs-traditional-models)
-5. [Data Ingestion & Preprocessing Pipeline](#5-data-ingestion--preprocessing-pipeline)
-    - [Data Sources Overview](#data-sources-overview)
-    - [NASA GOES Series](#nasa-goes-series)
-    - [NASA Wind Spacecraft](#nasa-wind-spacecraft)
-    - [Kyoto World Data Center](#kyoto-world-data-center)
-    - [ISRO GRASP/GSAT Calibration](#isro-graspgsat-calibration)
-    - [Data Alignment & Spike Removal](#data-alignment--spike-removal)
-6. [Physics-Informed Feature Engineering](#6-physics-informed-feature-engineering)
-    - [The Secret Sauce: ULF Pc5 Wave Power](#the-secret-sauce-ulf-pc5-wave-power)
-    - [Radial Diffusion Mathematics](#radial-diffusion-mathematics)
-    - [Continuous Wavelet Transform (CWT) implementation](#continuous-wavelet-transform-cwt-implementation)
-7. [AI Architecture: Salesforce Moirai & LoRA](#7-ai-architecture-salesforce-moirai--lora)
-    - [Introduction to Moirai](#introduction-to-moirai)
-    - [Why Not LSTM, ARIMA, or Prophet?](#why-not-lstm-arima-or-prophet)
-    - [Low-Rank Adaptation (LoRA) Fine-Tuning](#low-rank-adaptation-lora-fine-tuning)
-    - [Multivariate Distribution Mixture](#multivariate-distribution-mixture)
-    - [Quantile Forecasting (P10, P50, P90)](#quantile-forecasting-p10-p50-p90)
-8. [Training Methodology & Empirical Results](#8-training-methodology--empirical-results)
-    - [Hardware & Environment Setup](#hardware--environment-setup)
-    - [Overcoming Apple Silicon MPS Bugs](#overcoming-apple-silicon-mps-bugs)
-    - [Loss Optimization Journey (Epoch by Epoch)](#loss-optimization-journey-epoch-by-epoch)
-    - [Attention Alignment ("Grokking")](#attention-alignment-grokking)
-9. [System Architecture & Tech Stack](#9-system-architecture--tech-stack)
-    - [Global Architecture Diagram](#global-architecture-diagram)
-    - [ML Inference Backend (FastAPI)](#ml-inference-backend-fastapi)
-    - [Real-Time Operator Dashboard (React.js)](#real-time-operator-dashboard-reactjs)
-10. [Scalability, Feasibility & Deployment](#10-scalability-feasibility--deployment)
-11. [Scientific Literature & Bibliography](#11-scientific-literature--bibliography)
 
----
 
 ## 1. Executive Summary
 
@@ -67,7 +27,7 @@ Unlike traditional reactive systems, PRAHARI delivers highly accurate **30-minut
 
 ---
 
-## 2. ISRO Problem Statement 14 Overview
+## 2. ISRO Problem Overview
 
 **Title:** Forecasting Energetic Particle Radiation Environment for ISRO's Geostationary Satellites
 
@@ -80,16 +40,9 @@ Develop and demonstrate an algorithm to predict energetic particle fluxes of ele
 - Fine-tuning and optimization of the algorithm for training, validation, and testing.
 - Demonstration and visualization of the outputs and their accuracy.
 
-**Required Datasets (Provided/Mandated by ISRO):**
+**Required Datasets :**
 - GOES series >2 MeV electron fluxes (11 years) in CDF format.
 - Wind spacecraft solar wind parameters: speed, IMF, density (11 years).
-- ISRO's GRASP/GSAT payload electron fluxes (1-2 years) for Indian longitude comparison.
-
-**Evaluation Parameters:**
-- Understanding of the basics of solar wind and the radiation belt.
-- Correctness of reading and visualization of data.
-- Identification and optimization of an AI/ML algorithm for best performance.
-- Accuracy of the predicted fluxes at geostationary orbit.
 
 **PRAHARI's Compliance:** 
 PRAHARI exceeds every single requirement outlined in PS-14. Not only do we meet the 30-min, 6-hr, and 12-hr horizons, but we do so simultaneously using a unified transformer architecture, providing full probabilistic bounds rather than brittle point-predictions.
