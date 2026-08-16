@@ -5,17 +5,31 @@
 
 **A physics-informed deep learning system for forecasting relativistic electron flux at geostationary orbit**
 
-<sub>Developed for ISRO Problem Statement 14 — Forecasting Energetic Particle Radiation Environment for ISRO's Geostationary Satellites</sub>
+<sub>Built for an ISRO Hackathon problem statement on forecasting the energetic particle radiation environment for geostationary satellites</sub>
 
 <br>
 
-![Problem Statement](https://img.shields.io/badge/ISRO-PS--14-orange?style=flat-square)
-![Model](https://img.shields.io/badge/Model-Moirai%20%2B%20LoRA-blue?style=flat-square)
-![Python](https://img.shields.io/badge/Python-3.10-blue?style=flat-square&logo=python&logoColor=white)
-![FastAPI](https://img.shields.io/badge/API-FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white)
-![React](https://img.shields.io/badge/Dashboard-React-61DAFB?style=flat-square&logo=react&logoColor=white)
-![License](https://img.shields.io/badge/License-MIT-lightgrey?style=flat-square)
+![ISRO Hackathon](https://img.shields.io/badge/ISRO-Hackathon-orange?style=for-the-badge&logo=isro&logoColor=white)
+![Model](https://img.shields.io/badge/Model-Moirai%20%2B%20LoRA-4B32C3?style=for-the-badge)
+![Python](https://img.shields.io/badge/Python-3.10-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/API-FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)
+![React](https://img.shields.io/badge/Dashboard-React-61DAFB?style=for-the-badge&logo=react&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-lightgrey?style=for-the-badge)
 
+</div>
+
+<br>
+
+<div align="center">
+<table>
+<tr>
+<td align="center" width="20%">🛰️<br><b>Orbit</b><br><sub>Geostationary</sub></td>
+<td align="center" width="20%">⚡<br><b>Target</b><br><sub>&gt;2 MeV electron flux</sub></td>
+<td align="center" width="20%">🧠<br><b>Model</b><br><sub>Moirai + LoRA</sub></td>
+<td align="center" width="20%">⏱️<br><b>Horizons</b><br><sub>30 min · 6 hr · 12 hr</sub></td>
+<td align="center" width="20%">🚦<br><b>Output</b><br><sub>Green / Amber / Red</sub></td>
+</tr>
+</table>
 </div>
 
 ---
@@ -44,24 +58,35 @@
 
 Geostationary satellites — including ISRO's INSAT and GSAT fleet — sit inside the outer Van Allen radiation belt, where solar storms can drive sudden spikes in relativistic (>2 MeV) electron flux. These "killer electrons" penetrate satellite shielding and embed in the dielectric material of circuit boards and cables. When the accumulated charge exceeds the material's breakdown strength, an internal electrostatic discharge (ESD) can damage or destroy onboard electronics.
 
-ISRO's PS-14 asks for an algorithm that predicts >2 MeV electron flux at GEO **30–45 minutes**, **6 hours**, and **12 hours** ahead, using 11 years of GOES electron flux and Wind solar wind data.
+The problem statement, issued as part of an ISRO hackathon, asks for an algorithm that predicts >2 MeV electron flux at GEO **30–45 minutes**, **6 hours**, and **12 hours** ahead, using 11 years of GOES electron flux and Wind solar wind data.
 
 ```mermaid
-flowchart LR
-    A[Solar Activity] --> B[CME / Solar Wind Disturbance]
-    B --> C["Southward IMF Bz"]
-    C --> D[Geomagnetic Reconnection]
-    D --> E[ULF Pc5 Waves]
-    E --> F[Radial Diffusion /<br>Electron Acceleration]
-    F --> G[">2 MeV Electron<br>Flux Increase"]
-    G --> H[Deep-Dielectric Charging]
-    H --> I[Satellite Anomaly]
+flowchart TB
+    A(["☀️ Solar Activity"]) --> B(["🌊 CME / Solar Wind<br>Disturbance"])
+    B --> C(["🧲 Southward IMF Bz"])
+    C --> D(["🌐 Geomagnetic<br>Reconnection"])
+    D --> E(["📡 ULF Pc5 Waves"])
+    E --> F(["🔺 Radial Diffusion /<br>Electron Acceleration"])
+    F --> G(["⚡ &gt;2 MeV Electron<br>Flux Increase"])
+    G --> H(["🔥 Deep-Dielectric<br>Charging"])
+    H --> I(["💥 Satellite Anomaly<br>/ Failure"])
 
-    style I fill:#7a1f1f,color:#fff
-    style G fill:#b35a00,color:#fff
+    P(["🛰️ PRAHARI Forecast<br>Window"]) -.intervenes before.-> H
+
+    classDef solar fill:#FF8C42,color:#1a1a2e,stroke:#e0672c,stroke-width:2px
+    classDef space fill:#2E4374,color:#fff,stroke:#1a2b4d,stroke-width:2px
+    classDef risk fill:#C1440E,color:#fff,stroke:#8a2f08,stroke-width:2px
+    classDef danger fill:#7A1F1F,color:#fff,stroke:#4d1212,stroke-width:3px
+    classDef prahari fill:#0F5132,color:#fff,stroke:#0a3622,stroke-width:3px
+
+    class A,B solar
+    class C,D,E,F space
+    class G risk
+    class H,I danger
+    class P prahari
 ```
 
-PRAHARI is positioned upstream of this chain: it forecasts the electron flux enhancement before deep-dielectric charging accumulates to dangerous levels, giving operators a window to act.
+PRAHARI sits upstream of the final failure step: it forecasts the electron flux enhancement **before** deep-dielectric charging accumulates to dangerous levels, giving operators a window to act.
 
 ---
 
@@ -100,7 +125,7 @@ A single GEO satellite typically costs several hundred million dollars to build 
 
 ## Data Sources
 
-PRAHARI uses the four data sources specified in PS-14, spanning roughly a full solar cycle (11 years).
+PRAHARI uses the four data sources specified in the problem statement, spanning roughly a full solar cycle (11 years).
 
 | Source | Instrument | Variables | Native Resolution | Role |
 |---|---|---|---|---|
@@ -118,15 +143,47 @@ PRAHARI uses the four data sources specified in PS-14, spanning roughly a full s
 Raw CDF (Common Data Format) files from GOES and Wind contain gaps, recalibration artifacts, and mismatched sampling rates that need to be resolved before the data can be used for training.
 
 ```mermaid
-flowchart TD
-    A[GOES CDF files] --> E[cdflib parsing]
-    B[Wind CDF files] --> E
-    C[Kyoto WDC indices] --> F[Alignment]
-    D[ISRO GRASP/GSAT] --> F
-    E --> F
-    F --> G["Resample to 5-min cadence<br>(forward-fill + spline interpolation)"]
-    G --> H["log1p transform +<br>MinMaxScaler [1e-4, 1.0]"]
-    H --> I[Model-ready feature set]
+flowchart TB
+    subgraph RAW["📥 Raw Sources"]
+        direction LR
+        A["🇺🇸 GOES CDF files"]
+        B["🇺🇸 Wind CDF files"]
+        C["🌏 Kyoto WDC indices"]
+        D["🇮🇳 ISRO GRASP/GSAT"]
+    end
+
+    subgraph PARSE["⚙️ Parsing & Alignment"]
+        direction TB
+        E["cdflib parsing"]
+        F["Multi-source time alignment"]
+        E --> F
+    end
+
+    subgraph CLEAN["🧹 Cleaning & Scaling"]
+        direction TB
+        G["Resample → 5-min cadence<br><sub>forward-fill + spline interpolation</sub>"]
+        H["log1p transform<br>+ MinMaxScaler [1e-4, 1.0]"]
+        G --> H
+    end
+
+    I(["✅ Model-ready<br>feature set"])
+
+    A --> E
+    B --> E
+    C --> F
+    D --> F
+    PARSE --> G
+    CLEAN --> I
+
+    classDef raw fill:#2E4374,color:#fff,stroke:#1a2b4d,stroke-width:2px
+    classDef process fill:#5C4D91,color:#fff,stroke:#3d3160,stroke-width:2px
+    classDef clean fill:#0F5132,color:#fff,stroke:#0a3622,stroke-width:2px
+    classDef out fill:#FF8C42,color:#1a1a2e,stroke:#c9691f,stroke-width:3px
+
+    class A,B,C,D raw
+    class E,F process
+    class G,H clean
+    class I out
 ```
 
 **Key processing steps:**
@@ -182,11 +239,19 @@ where $D_{LL}^{M}$ is the radial diffusion coefficient contribution from magneti
 Fully fine-tuning a model the size of Moirai on 11 years of 5-minute-resolution data is computationally impractical outside a large GPU cluster. **LoRA (Low-Rank Adaptation)** freezes Moirai's pre-trained weights and injects small trainable rank-decomposition matrices into the attention layers.
 
 ```mermaid
-flowchart LR
-    A[Pretrained Moirai weights] --> B[Freeze base weights]
-    B --> C[Insert LoRA adapters<br>in attention layers]
-    C --> D[Train adapters only<br>~13.8M parameters]
-    D --> E[Fine-tuned electron-flux<br>forecasting model]
+flowchart TB
+    A(["🧠 Pretrained Moirai<br>(LOTSA corpus)"]) --> B(["❄️ Freeze base<br>transformer weights"])
+    B --> C(["🔧 Insert LoRA adapters<br>into attention layers"])
+    C --> D(["🎯 Train adapters only<br><sub>13.8M trainable params</sub>"])
+    D --> E(["🛰️ Fine-tuned electron-flux<br>forecasting model"])
+
+    classDef frozen fill:#2E4374,color:#fff,stroke:#1a2b4d,stroke-width:2px
+    classDef active fill:#5C4D91,color:#fff,stroke:#3d3160,stroke-width:2px
+    classDef result fill:#0F5132,color:#fff,stroke:#0a3622,stroke-width:3px
+
+    class A,B frozen
+    class C,D active
+    class E result
 ```
 
 This reduced the trainable parameter count to **13.8 million**, making it feasible to fine-tune on a single Apple Silicon (MPS) machine or a free-tier Colab/Kaggle T4 GPU in a few hours.
@@ -205,13 +270,29 @@ Instead of a single-value prediction, the model head learns a mixture over sever
 
 ```mermaid
 flowchart LR
-    subgraph Forecast Band
-    direction TB
-    P90["P90 — upper bound (conservative)"]
-    P50["P50 — median forecast"]
-    P10["P10 — lower bound (best case)"]
+    subgraph BAND["📊 Probabilistic Forecast Band"]
+        direction TB
+        P90(["P90 — upper bound<br><sub>conservative / worst-case</sub>"])
+        P50(["P50 — median forecast"])
+        P10(["P10 — lower bound<br><sub>best case</sub>"])
     end
-    P90 -.-> T["Compared against<br>10³ pfu charging threshold"]
+    T(["⚠️ 10³ pfu deep-dielectric<br>charging threshold"])
+    R(["🚦 Risk Level<br>Green / Amber / Red"])
+
+    P90 -->|"compared against"| T
+    T --> R
+
+    classDef p90 fill:#C1440E,color:#fff,stroke:#8a2f08,stroke-width:2px
+    classDef p50 fill:#2E4374,color:#fff,stroke:#1a2b4d,stroke-width:2px
+    classDef p10 fill:#0F5132,color:#fff,stroke:#0a3622,stroke-width:2px
+    classDef threshold fill:#7A1F1F,color:#fff,stroke:#4d1212,stroke-width:2px
+    classDef risk fill:#FF8C42,color:#1a1a2e,stroke:#c9691f,stroke-width:3px
+
+    class P90 p90
+    class P50 p50
+    class P10 p10
+    class T threshold
+    class R risk
 ```
 
 The three forecast horizons (30 min, 6 hr, 12 hr) are produced simultaneously by the same model for a given input window. Operationally, the **P90 band is the value monitored against the deep-dielectric charging threshold** (~10³ pfu, per Fennell et al. 2001): if P90 crosses this threshold, the corresponding risk level is escalated so an operator can review the forecast and decide on any protective action. PRAHARI itself does not initiate any automated satellite command.
@@ -260,35 +341,75 @@ No RMSE, MAE, R², or classification-style accuracy metrics were computed for th
 ## System Architecture
 
 ```mermaid
-flowchart TD
-    subgraph Sources["Data Sources"]
-    A1[NASA GOES]
-    A2[NASA Wind]
-    A3[Kyoto WDC]
-    A4[ISRO GRASP/GSAT]
+flowchart TB
+    subgraph DATA["📡 Data Sources"]
+        direction LR
+        A1["NASA GOES"]
+        A2["NASA Wind"]
+        A3["Kyoto WDC"]
+        A4["ISRO GRASP/GSAT"]
     end
 
-    Sources --> B[Data Ingestion<br>cdflib + Pandas]
-    B --> C[Cleaning & Alignment<br>5-min resample]
-    C --> D[Physics Feature Engineering<br>CWT → Pc5 Wave Power]
-    D --> E[Moirai + LoRA]
-    E --> F["Probabilistic Forecast<br>(P10/P50/P90)"]
-    F --> G["30 min / 6 hr / 12 hr"]
-    G --> H[Risk Classification Engine]
-    H --> I[FastAPI Inference Service]
-    I --> J[Node.js / Express Backend<br>MongoDB + WebSocket]
-    J --> K[React Operator Dashboard]
+    subgraph PIPE["⚙️ Processing"]
+        direction TB
+        B["Data Ingestion<br><sub>cdflib + Pandas</sub>"]
+        C["Cleaning & Alignment<br><sub>5-min resample</sub>"]
+        D["Physics Feature Engineering<br><sub>CWT → Pc5 Wave Power</sub>"]
+        B --> C --> D
+    end
+
+    subgraph MODEL["🧠 Forecasting Core"]
+        direction TB
+        E["Moirai + LoRA"]
+        F(["Probabilistic Forecast<br>P10 / P50 / P90"])
+        G["30 min · 6 hr · 12 hr"]
+        E --> F --> G
+    end
+
+    subgraph SERVE["🖥️ Serving Layer"]
+        direction TB
+        H["Risk Classification Engine"]
+        I["FastAPI Inference Service"]
+        J["Node.js / Express<br>MongoDB + WebSocket"]
+        H --> I --> J
+    end
+
+    K(["📊 React Operator Dashboard"])
+
+    DATA --> PIPE --> MODEL --> SERVE --> K
+
+    classDef data fill:#2E4374,color:#fff,stroke:#1a2b4d,stroke-width:2px
+    classDef pipe fill:#5C4D91,color:#fff,stroke:#3d3160,stroke-width:2px
+    classDef model fill:#0F5132,color:#fff,stroke:#0a3622,stroke-width:2px
+    classDef serve fill:#C1440E,color:#fff,stroke:#8a2f08,stroke-width:2px
+    classDef dash fill:#FF8C42,color:#1a1a2e,stroke:#c9691f,stroke-width:3px
+
+    class A1,A2,A3,A4 data
+    class B,C,D pipe
+    class E,F,G model
+    class H,I,J serve
+    class K dash
 ```
 
 **Risk classification logic**
 
 ```mermaid
 flowchart TD
-    A[P90 Forecast] --> B{"Below threshold\nwith margin?"}
-    B -->|Yes| G[GREEN]
-    B -->|No, approaching| C[AMBER]
-    A --> D{"Exceeds 10³ pfu\nthreshold?"}
-    D -->|Yes| R[RED]
+    A(["P90 Forecast"]) --> B{"Well below<br>threshold?"}
+    B -->|Yes| GRN(["🟢 GREEN"])
+    B -->|Approaching| AMB(["🟡 AMBER"])
+    A --> D{"Crosses 10³ pfu<br>threshold?"}
+    D -->|Yes| RED(["🔴 RED"])
+
+    classDef green fill:#0F5132,color:#fff,stroke:#0a3622,stroke-width:2px
+    classDef amber fill:#B8860B,color:#fff,stroke:#8a6508,stroke-width:2px
+    classDef red fill:#7A1F1F,color:#fff,stroke:#4d1212,stroke-width:2px
+    classDef decision fill:#2E4374,color:#fff,stroke:#1a2b4d,stroke-width:2px
+
+    class GRN green
+    class AMB amber
+    class RED red
+    class A,B,D decision
 ```
 
 <!-- INSERT: docs/images/system-architecture.png -->
@@ -374,10 +495,10 @@ Planned next steps include held-out and cross-storm validation, quantile calibra
 7. O'Brien, T. P., et al. (2001). *Which magnetic storms produce relativistic electrons at geosynchronous orbit?* Journal of Geophysical Research.
 8. Reeves, G. D., et al. (2003). *Acceleration and loss of relativistic electrons during geomagnetic storms*. Geophysical Research Letters, 30(10).
 9. Camporeale, E. (2019). *The challenge of machine learning in space weather: Nowcasting and forecasting*. Space Weather, 17(8), 1166–1207.
-10. ISRO Problem Statement 14 (2024). *Forecasting Energetic Particle Radiation Environment for ISRO's Geostationary Satellites*. ISRO Hackathon Official Documentation.
+10. ISRO Hackathon Problem Statement (2024). *Forecasting Energetic Particle Radiation Environment for ISRO's Geostationary Satellites*. Official Hackathon Documentation.
 
 ---
 
 <div align="center">
-<sub>Team PRAHARI — ISRO Hackathon submission for Problem Statement 14</sub>
+<sub>Team PRAHARI — submission for an ISRO Hackathon problem statement</sub>
 </div>
