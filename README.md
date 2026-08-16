@@ -9,7 +9,7 @@
 
 <br>
 
-![ISRO Hackathon](https://img.shields.io/badge/ISRO-Hackathon-orange?style=for-the-badge&logo=isro&logoColor=white)
+![ISRO](https://img.shields.io/badge/ISRO-Hackathon-orange?style=for-the-badge&logo=isro&logoColor=white)
 ![Model](https://img.shields.io/badge/Model-Moirai%20%2B%20LoRA-4B32C3?style=for-the-badge)
 ![Python](https://img.shields.io/badge/Python-3.10-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/API-FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)
