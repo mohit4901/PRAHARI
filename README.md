@@ -1,298 +1,383 @@
 <div align="center">
-  <img src="https://img.shields.io/badge/ISRO-Hackathon_2024-orange?style=for-the-badge&logo=isro" alt="ISRO Hackathon 2024">
-  <img src="https://img.shields.io/badge/Status-Demonstration_Ready-brightgreen?style=for-the-badge" alt="Status">
-  <img src="https://img.shields.io/badge/AI_Core-Salesforce_Moirai-blue?style=for-the-badge&logo=salesforce" alt="AI Model">
-  <img src="https://img.shields.io/badge/Architecture-MERN_&_FastAPI-purple?style=for-the-badge" alt="Architecture">
-  <img src="https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge" alt="License">
-  
-  <h1>🛰️ PRAHARI</h1>
-  <h2>Predictive Radiation Hazard Alert & Resilience Intelligence</h2>
-  <p><i>An Advanced Deep Learning Early-Warning System for Space Weather Threats at Geostationary Orbit</i></p>
-  <p><b>Developed for ISRO Problem</b></p>
+
+# PRAHARI
+### Predictive Radiation Hazard Alert & Resilience Intelligence
+
+**A physics-informed deep learning system for forecasting relativistic electron flux at geostationary orbit**
+
+<sub>Developed for ISRO Problem Statement 14 — Forecasting Energetic Particle Radiation Environment for ISRO's Geostationary Satellites</sub>
+
+<br>
+
+![Problem Statement](https://img.shields.io/badge/ISRO-PS--14-orange?style=flat-square)
+![Model](https://img.shields.io/badge/Model-Moirai%20%2B%20LoRA-blue?style=flat-square)
+![Python](https://img.shields.io/badge/Python-3.10-blue?style=flat-square&logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/API-FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white)
+![React](https://img.shields.io/badge/Dashboard-React-61DAFB?style=flat-square&logo=react&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-lightgrey?style=flat-square)
+
 </div>
 
 ---
 
+## Table of Contents
 
-
-## 1. Executive Summary
-
-In the modern digital era, human civilization is intrinsically dependent on space-based infrastructure. Geostationary Earth Orbit (GEO) satellites form the backbone of global telecommunications, offline UPI transactions, GPS navigation, and critical weather monitoring (such as India's INSAT and GSAT fleets). However, these multi-million-dollar assets orbit in a highly hazardous environment known as the Outer Van Allen Radiation Belt. 
-
-During severe space weather events—triggered by Solar Flares and Coronal Mass Ejections (CMEs)—the flux of highly energetic, relativistic "killer electrons" (>2 MeV) can spike by orders of magnitude. These electrons penetrate satellite shielding, embedding themselves deep within critical dielectric materials (circuit boards, coaxial cables). When the accumulated charge exceeds the material's breakdown threshold, a sudden electrostatic discharge (ESD) occurs, permanently destroying the satellite's electronics. 
-
-**PRAHARI (Predictive Radiation Hazard Alert & Resilience Intelligence)** is a breakthrough AI-driven solution developed to proactively combat this threat. PRAHARI acts as a sovereign, predictive shield for ISRO. By fusing 11 years of multi-source astrophysical data (GOES, Wind, Kyoto) and leveraging **Moirai**, a state-of-the-art Time-Series Foundation Model fine-tuned via **LoRA**, PRAHARI predicts electron flux spikes at GEO. 
-
-Unlike traditional reactive systems, PRAHARI delivers highly accurate **30-minute nowcasts, 6-hour forecasts, and 12-hour outlooks**. It empowers ISRO satellite operators with a real-time, zero-interpretation risk gauge (Green/Amber/Red) and probabilistic confidence bands, allowing them to initiate protective "safe modes" hours before a radiation storm strikes.
-
----
-
-## 2. ISRO Problem Overview
-
-**Title:** Forecasting Energetic Particle Radiation Environment for ISRO's Geostationary Satellites
-
-**Description:**
-Develop and demonstrate an algorithm to predict energetic particle fluxes of electrons at geostationary orbit. The algorithm should be able to predict harsh radiation fluxes at least 30 to 45 minutes in advance, and also give a reasonable forecast for 6 hours and 12 hours ahead.
-
-**ISRO's Expected Outcomes:**
-- Algorithm for reading, processing, visualization, and forecasting of energetic electron fluxes at geosynchronous orbit.
-- Identification of an AI/ML algorithm for time-series forecasting.
-- Fine-tuning and optimization of the algorithm for training, validation, and testing.
-- Demonstration and visualization of the outputs and their accuracy.
-
-**Required Datasets :**
-- GOES series >2 MeV electron fluxes (11 years) in CDF format.
-- Wind spacecraft solar wind parameters: speed, IMF, density (11 years).
-
-**PRAHARI's Compliance:** 
-PRAHARI exceeds every single requirement outlined in PS-14. Not only do we meet the 30-min, 6-hr, and 12-hr horizons, but we do so simultaneously using a unified transformer architecture, providing full probabilistic bounds rather than brittle point-predictions.
+- [Problem at a Glance](#problem-at-a-glance)
+- [PRAHARI at a Glance](#prahari-at-a-glance)
+- [Why This Matters](#why-this-matters)
+- [Data Sources](#data-sources)
+- [Data Processing Pipeline](#data-processing-pipeline)
+- [Physics-Informed Features](#physics-informed-features)
+- [AI/ML Architecture](#aiml-architecture)
+- [Forecast Output](#forecast-output)
+- [Training Methodology & Results](#training-methodology--results)
+- [System Architecture](#system-architecture)
+- [Operator Dashboard](#operator-dashboard)
+- [Technology Stack](#technology-stack)
+- [Deployment](#deployment)
+- [Limitations & Future Work](#limitations--future-work)
+- [References](#references)
 
 ---
 
-## 3. The Threat Landscape: Physics of Space Weather
+## Problem at a Glance
 
-To build a genuinely accurate AI model, one must understand the underlying physics. PRAHARI is not just a mathematical black box; it is deeply rooted in space plasma physics.
+Geostationary satellites — including ISRO's INSAT and GSAT fleet — sit inside the outer Van Allen radiation belt, where solar storms can drive sudden spikes in relativistic (>2 MeV) electron flux. These "killer electrons" penetrate satellite shielding and embed in the dielectric material of circuit boards and cables. When the accumulated charge exceeds the material's breakdown strength, an internal electrostatic discharge (ESD) can damage or destroy onboard electronics.
 
-### Coronal Mass Ejections (CMEs) & Solar Wind
-The Sun constantly emits a stream of charged particles known as the solar wind. During periods of high solar activity (the 11-year solar cycle), the Sun can violently eject billions of tons of plasma and magnetic field into space—a Coronal Mass Ejection (CME). When a CME travels towards Earth at speeds exceeding 1,000 km/s, its Interplanetary Magnetic Field (IMF) interacts with Earth's magnetosphere. If the IMF points southward (negative $B_z$), it undergoes magnetic reconnection with Earth's northward-pointing magnetic field, tearing open Earth's protective magnetic shield and dumping massive amounts of energy into the magnetotail.
+ISRO's PS-14 asks for an algorithm that predicts >2 MeV electron flux at GEO **30–45 minutes**, **6 hours**, and **12 hours** ahead, using 11 years of GOES electron flux and Wind solar wind data.
 
-### The Killer Electrons (>2 MeV)
-Earth is surrounded by two donut-shaped regions of trapped radiation known as the Van Allen Belts. The outer belt (ranging from ~3 to 7 Earth radii, $R_E$) is highly dynamic. During a geomagnetic storm (triggered by a CME), the injected energy accelerates ambient electrons to relativistic speeds (>2 MeV). These are colloquially known in the aerospace industry as "Killer Electrons." Geostationary orbit lies exactly at $\sim 6.6 R_E$, directly in the heart of the outer radiation belt.
+```mermaid
+flowchart LR
+    A[Solar Activity] --> B[CME / Solar Wind Disturbance]
+    B --> C["Southward IMF Bz"]
+    C --> D[Geomagnetic Reconnection]
+    D --> E[ULF Pc5 Waves]
+    E --> F[Radial Diffusion /<br>Electron Acceleration]
+    F --> G[">2 MeV Electron<br>Flux Increase"]
+    G --> H[Deep-Dielectric Charging]
+    H --> I[Satellite Anomaly]
 
-### Deep-Dielectric Charging: The Silent Satellite Killer
-Lower energy electrons cause surface charging, which is problematic but manageable. However, >2 MeV electrons are so energetic that they pass straight through the aluminum chassis of a satellite. They embed themselves into the insulators (dielectrics) of printed circuit boards and cables.
-1. **Accumulation:** Over hours or days of high flux, a massive negative charge builds up inside the dielectric material.
-2. **Breakdown:** When the electric field exceeds the dielectric strength of the material (typically $\sim 10^7$ V/m), the material physically breaks down.
-3. **Discharge:** A massive internal lightning strike (Electrostatic Discharge or ESD) occurs, sending thousands of volts into delicate microprocessors, resulting in phantom commands, memory bit-flips (SEUs), or permanent catastrophic hardware failure.
-
-### Real-World Catastrophes
-- **Galaxy 15 (2010):** A commercial communications satellite became a "zombisat" after a solar storm caused deep-dielectric charging, resulting in total loss of command control for months.
-- **Starlink Loss (2022):** SpaceX lost 40 Starlink satellites due to atmospheric drag induced by a geomagnetic storm, costing tens of millions of dollars in a single day.
-- **Telesat Anik E1 & E2 (1994):** Both Canadian communication satellites suffered momentum wheel control failure due to deep charging from killer electrons, knocking out national television and news services.
-
-**The Financial Impact:** Replacing a single GEO satellite costs upwards of $300 Million to $500 Million. The loss of navigation and communication services costs the global economy billions per day. PRAHARI acts as an insurance policy against these multi-million dollar losses.
-
----
-
-## 4. The PRAHARI Solution
-
-PRAHARI is a comprehensive, end-to-end Machine Learning pipeline and operational dashboard designed specifically for ISRO's Geostationary operations.
-
-### Why PRAHARI?
-Current space weather prediction models operated by NOAA (like the REFM model) rely on highly simplistic linear filtering techniques (e.g., using only solar wind speed to predict flux). They are outdated, provide only a single point-prediction, and are optimized for US longitudes. 
-
-PRAHARI introduces the power of **Foundation Models** to space physics. 
-
-### Unique Innovation vs. Traditional Models
-
-| Paradigm | Traditional Space Weather Models | PRAHARI Innovation | Resulting Positive Outcome |
-| :--- | :--- | :--- | :--- |
-| **Forecast Output** | Single-input linear filter, 1 horizon, point prediction. | **4-source fusion + Moirai**, 3 horizons, quantile confidence bands. | Operators get 12hr advance warning with explicit mathematical confidence levels. |
-| **Physics Inputs** | Raw Solar wind speed only (ignores precursors). | **ULF Pc5 wave power** engineered as a specific precursor feature. | Earlier and more accurate detection of sudden electron acceleration events. |
-| **Longitude Bias** | Global models (US-built), no Indian-longitude tuning. | **GRASP/GSAT calibration layer** integrated into the pipeline. | The first India-sovereign GEO radiation forecast, ensuring extreme accuracy for ISRO. |
-| **Operator UI** | Raw flux numbers in flat text files (requires expert manual interpretation). | **Per-satellite risk gauge** (Green / Amber / Red) on a modern UI. | Zero-interpretation alert system. Operators can act immediately without a PhD in physics. |
-| **System Resilience** | Highly dependent on US GOES operations. | Fallback mode leveraging Kyoto WDC and Wind data continuously. | End-to-end India-owned forecasting pipeline ensuring space weather sovereignty. |
-
----
-
-## 5. Data Ingestion & Preprocessing Pipeline
-
-Garbage in, garbage out. The foundation of PRAHARI is a robust, highly-engineered data ingestion pipeline that parses millions of rows of astrophysical data from disparate global sources.
-
-### Data Sources Overview
-We utilize exactly what ISRO mandated: 11 full years of data spanning an entire solar cycle (e.g., Solar Cycle 24).
-
-#### NASA GOES Series
-- **Instrument:** MAGED / EPEAD sensors on board GOES-13, 14, 15, and 16.
-- **Variable:** Integral electron flux for energies $>2.0$ MeV (measured in $particles / cm^2 / s / sr$).
-- **Role:** This is our primary Target Variable ($Y$).
-
-#### NASA Wind Spacecraft
-- **Instrument:** SWE (Solar Wind Experiment) and MFI (Magnetic Fields Investigation).
-- **Variables:** Solar Wind Speed ($V_{sw}$), Proton Density ($N_p$), Interplanetary Magnetic Field ($B_x, B_y, B_z$).
-- **Role:** These are the upstream drivers (Covariates $X$). Wind sits at the L1 Lagrange point, providing roughly a 45-to-60 minute physical advance warning before the solar wind hits Earth.
-
-#### Kyoto World Data Center
-- **Variables:** Kp index, Dst index, AE (Auroral Electrojet) index.
-- **Role:** These quantify the global reaction of Earth's magnetic field to the solar wind, acting as essential state variables for the radiation belt environment.
-
-#### ISRO GRASP/GSAT Calibration
-- **Role:** US GOES satellites are stationed at American longitudes. Earth's magnetic field is asymmetrical (e.g., the South Atlantic Anomaly). We use 1-2 years of ISRO GRASP data to create a calibration layer, correcting global model bias for Indian longitudes (approx. 74°E to 93°E).
-
-### Data Alignment & Spike Removal
-Raw CDF (Common Data Format) files are notoriously difficult to work with. They contain anomalies, data gaps, and instrument recalibration artifacts.
-1. **CDF Parsing:** We utilized `cdflib` to extract tens of thousands of daily CDF files natively in Python.
-2. **Resampling:** Since GOES records at 5-minute intervals, and Wind records at 1-minute intervals, we implemented a robust Pandas alignment pipeline to resample all variables to a strict **5-minute cadence** using forward-filling for small gaps and spline interpolation for longer gaps.
-3. **Log Transformation & Scaling:** Electron fluxes span 5 orders of magnitude ($10^1$ to $10^5$). We apply a $\log_{1p}(x)$ transformation and a `MinMaxScaler` bound exactly between `[1e-4, 1.0]` to ensure deep learning stability (preventing NaN gradients).
-
----
-
-## 6. Physics-Informed Feature Engineering
-
-Machine learning models fail in space physics when they are treated as pure data problems. PRAHARI treats this as a physics problem powered by ML.
-
-### The Secret Sauce: ULF Pc5 Wave Power
-Why do electrons accelerate? According to quasi-linear diffusion theory, electrons in the outer belt are accelerated via resonant interactions with **Ultra-Low Frequency (ULF) Pc5 waves** (frequency range 1.5 to 10 mHz). 
-
-When the solar wind dynamic pressure fluctuates, it "plucks" Earth's magnetic field like a guitar string, generating these massive Alfven waves. These waves violate the electron's third adiabatic invariant, driving them inward toward Earth where the stronger magnetic field accelerates them to MeV energies (Radial Diffusion).
-
-### Radial Diffusion Mathematics
-The radial diffusion coefficient $D_{LL}$ is exponentially dependent on the power spectral density of these ULF fluctuations:
-$$ D_{LL} = D_{LL}^M + D_{LL}^E $$
-Where $D_{LL}^M$ is driven by magnetic fluctuations. Instead of expecting the AI to magically deduce this complex Fourier relationship from raw magnetic field data, **we engineered it for the AI.**
-
-### Continuous Wavelet Transform (CWT) implementation
-Using `PyWavelets`, we run a Continuous Wavelet Transform (using a Morlet mother wavelet) over the raw magnetometer data ($B_z$) to extract the exact signal power within the 1.5 - 10 mHz Pc5 band.
-1. **Time-Frequency Localization:** Unlike Fast Fourier Transforms (FFT), CWT preserves both time and frequency resolution, allowing us to pinpoint the exact minute a ULF wave storm begins.
-2. **Feature Integration:** We feed this newly engineered `Pc5_Wave_Power` feature directly into Moirai as a primary covariate. This gives PRAHARI a massive predictive advantage, allowing it to foresee acceleration events hours before the flux actually spikes.
-
----
-
-## 7. AI Architecture: Salesforce Moirai & LoRA
-
-To achieve simultaneous 30-min, 6-hr, and 12-hr forecasting, we discarded traditional recurrent networks (LSTM/GRU) and adopted state-of-the-art Foundation Models.
-
-### Introduction to Moirai
-**Moirai (Masked Encoder-based Universal Time Series Representation Learning)**, developed by Salesforce AI Research, is a massive Foundation Model pre-trained on the LOTSA dataset (27 Billion observations across 9 diverse domains). 
-
-Moirai uses a transformer architecture similar to BERT but engineered specifically for time-series. It processes time-series as discrete "patches" (tokens), allowing it to grasp long-term contextual dependencies that LSTMs simply forget.
-
-### Why Not LSTM, ARIMA, or Prophet?
-1. **Catastrophic Forgetting:** LSTMs struggle to maintain context over 11 years of high-resolution 5-minute data. Moirai’s self-attention mechanism looks at the entire sequence simultaneously.
-2. **Zero-Shot Capabilities:** Moirai understands the fundamental "shape" of time-series data inherently.
-3. **Any-Variate Processing:** Moirai can seamlessly ingest any number of covariates (we feed it 11 variables) without architectural changes.
-
-### Low-Rank Adaptation (LoRA) Fine-Tuning
-Training a massive foundation model from scratch on 11 years of 5-minute data requires hundreds of A100 GPUs. For a hackathon, this is impossible. 
-
-Instead, we used **LoRA (Low-Rank Adaptation)**. LoRA freezes the pre-trained weights of Moirai and injects tiny, trainable rank-decomposition matrices into the Transformer's Attention layers. 
-- **Efficiency:** We reduced the trainable parameters from hundreds of millions down to just **13.8 Million**.
-- **Speed:** This allowed us to fully fine-tune the model on an Apple Silicon MPS (or a free Kaggle/Colab T4 GPU) in mere hours rather than weeks.
-
-### Multivariate Distribution Mixture
-Unlike standard MSE loss, Moirai outputs a **Mixture of Distributions**:
-1. Student-T Distribution
-2. Normal Distribution
-3. Log-Normal Distribution
-4. Negative Binomial Distribution
-
-The model learns to dynamically weigh these distributions to match the actual probability density function of the electron flux.
-
-### Quantile Forecasting (P10, P50, P90)
-PRAHARI does not output a brittle point-prediction. It outputs a probability distribution.
-- **P50 (Median):** The most likely electron flux.
-- **P90 (Upper Bound):** The worst-case scenario. If the P90 band crosses the critical $10^3$ pfu deep-dielectric charging threshold, operators are immediately alerted.
-- **P10 (Lower Bound):** The best-case scenario.
-
----
-
-## 8. Training Methodology & Empirical Results
-
-Our training pipeline was rigorously executed and monitored to ensure zero data leakage and maximum physical alignment.
-
-### Hardware & Environment Setup
-- **Framework:** PyTorch Lightning (`lightning.pytorch`) + `uni2ts` library.
-- **Hardware:** Apple Silicon M-Series (MPS backend) & NVIDIA Tesla T4.
-- **Batch Size:** 32 (with gradient clipping applied).
-- **Sequence Context:** 512 patches.
-- **Prediction Horizon:** 128 patches (equiv. to ~10.6 hours at 5-min resolution).
-
-### Overcoming Apple Silicon MPS Bugs
-During development, we encountered a severe hardware-level bug in Apple's Metal Performance Shaders (MPS) where `aten::_standard_gamma` fallback during `.eval()` mode triggered `NaN` (Not a Number) gradient explosions in the LogNormal distribution, immediately crashing the model at Epoch 0. 
-
-**The Fix:** We implemented a rigorous `MinMaxScaler(feature_range=(1e-4, 1.0))` across the entire dataset to mathematically guarantee strict positivity (since $\log(x \le 0)$ yields negative infinity). Furthermore, we strategically bypassed the PyTorch Lightning validation loop (`limit_val_batches=0`) on Mac to monitor the stable Training NLLLoss instead, successfully averting the hardware crash.
-
-### Loss Optimization Journey (Epoch by Epoch)
-The results were extraordinary. The Packed Negative Log-Likelihood Loss (PackedNLLLoss) demonstrated a flawless optimization curve:
-
-| Epoch | NLL Loss | Improvement | Status |
-| :---: | :---: | :---: | :--- |
-| **0** | `21.597` | Baseline | Model initializes representations. |
-| **2** | `20.060` | -1.537 | Early learning of general trends. |
-| **5** | `19.547` | -0.513 | Fine-tuning attention heads via LoRA. |
-| **8** | `13.051` | -6.496 | **Major Breakthrough** (Attention Alignment) |
-| **10** | `5.222` | -7.829 | **Convergence achieved!** |
-
-### Attention Alignment ("Grokking")
-Notice the massive drop between Epoch 5 and Epoch 10 (from ~19 down to 5.2). In deep learning, this is known as "grokking". The Transformer model suddenly "understood" the non-linear physical relationship between the engineered ULF Pc5 waves, the southward IMF Bz, and the resulting multi-day acceleration of MeV electrons. This 400% reduction in loss proves the model is genuinely predicting physics, not just memorizing the dataset.
-
----
-
-## 9. System Architecture & Tech Stack
-
-PRAHARI is not just a Jupyter Notebook; it is a fully deployable, production-ready software stack.
-
-### Global Architecture Diagram
-```text
-[NASA GOES] + [Wind Spacecraft] + [Kyoto WDC] + [ISRO GRASP]
-       |             |                  |              |
-       +-------------+--------+---------+--------------+
-                              |
-                    [Ingestion Pipeline]
-              (Pandas, cdfLib, Spline Interpolation)
-                              |
-                 [Feature Engineering]
-           (PyWavelets CWT -> ULF Pc5 Wave Power)
-                              |
-                [AI Core: Moirai + LoRA]
-       (Salesforce uni2ts, PyTorch, PyTorch Lightning)
-            |                 |                |
-       (30-min)            (6-hour)         (12-hour)
-            |                 |                |
-            +-----------------+----------------+
-                              |
-                  [ML Inference API]
-               (FastAPI, ONNX Runtime)
-                              |
-                 [Node.js / Express Backend]
-                (MongoDB, WebSocket Server)
-                              |
-              [React.js Operator Dashboard]
-           (Recharts, TailwindCSS, Vite, Vercel)
+    style I fill:#7a1f1f,color:#fff
+    style G fill:#b35a00,color:#fff
 ```
 
-### ML Inference Backend (FastAPI)
-We developed a highly asynchronous Python backend using **FastAPI**. 
-- It automatically loads the best saved `.ckpt` model checkpoint.
-- It exposes a `/api/forecast` REST endpoint.
-- Upon request, it processes the latest 5-minute data from the real-time space weather feeds, runs the `model.predict()` function, and returns JSON containing the historical data and the 128-step future forecast.
-
-### Real-Time Operator Dashboard (React.js)
-The frontend is a visually stunning, Sci-Fi inspired React application designed specifically for ISRO control rooms.
-- **Dynamic Charting:** Utilizing `Recharts`, the UI plots live electron fluxes alongside the AI's P10/P50/P90 confidence bands.
-- **Critical Threshold Lines:** A stark red line demarcates the $10^3$ pfu (particles flux unit) Deep-Dielectric Charging threshold.
-- **Automated Alerts:** If the Moirai P90 forecast breaches the red line, the UI triggers a blaring visual alert (Red Status) demanding immediate operator intervention to power down non-essential satellite payloads.
+PRAHARI is positioned upstream of this chain: it forecasts the electron flux enhancement before deep-dielectric charging accumulates to dangerous levels, giving operators a window to act.
 
 ---
 
-## 10. Scalability, Feasibility & Deployment
+## PRAHARI at a Glance
 
-PRAHARI is designed to be immediately deployable by ISRO with near-zero overhead.
+| Parameter | PRAHARI |
+|---|---|
+| Target variable | >2 MeV electron flux at GEO |
+| Orbit regime | Geostationary (~6.6 R<sub>E</sub>) |
+| Primary target data | NASA GOES (MAGED/EPEAD) |
+| Upstream drivers | NASA Wind (SWE, MFI) |
+| Geomagnetic indices | Kp, Dst, AE (Kyoto WDC) |
+| Longitude calibration | ISRO GRASP / GSAT |
+| Engineered physics feature | ULF Pc5 wave power (CWT) |
+| Foundation model | Salesforce Moirai |
+| Fine-tuning method | LoRA (13.8M trainable params) |
+| Forecast horizons | 30 min · 6 hr · 12 hr |
+| Output type | Probabilistic (P10 / P50 / P90) |
+| Risk classification | Green / Amber / Red |
+| Inference backend | FastAPI |
+| Dashboard | React + Recharts |
 
-1. **Inference Latency:** The fine-tuned Moirai model (small variant) is extremely lightweight. Inference for a 12-hour forecast takes **less than 5 seconds** on a standard CPU, meaning it can easily operate in real-time (since solar wind data updates every 5 minutes).
-2. **Cloud Scalability:** The FastAPI backend can be containerized via Docker and deployed on AWS ECS, GCP Cloud Run, or ISRO's internal secure Kubernetes clusters.
-3. **Database Integration:** MongoDB seamlessly handles the storage of massive time-series JSON payloads, allowing operators to "scrub back in time" and view how the AI reacted to historical storms.
-4. **Sovereign Independence:** Because PRAHARI uses an open-source foundation model and fine-tunes it locally, ISRO retains 100% ownership of the model weights. The system does not rely on proprietary US forecasting systems, guaranteeing strategic independence.
+---
+
+## Why This Matters
+
+Deep-dielectric charging has caused documented spacecraft anomalies in the past:
+
+- **Galaxy 15 (2010)** — lost command control for months after a solar-storm-induced charging event, becoming a so-called "zombiesat."
+- **Telesat Anik E1/E2 (1994)** — momentum wheel control failures traced to deep charging from energetic electrons, disrupting Canadian broadcast services.
+- **Starlink (2022)** — a geomagnetic storm increased atmospheric drag and led to the loss of 40 newly launched satellites, illustrating how space weather can cause fleet-scale losses.
+
+A single GEO satellite typically costs several hundred million dollars to build and launch. Existing operational forecasts (e.g., NOAA's relativistic electron models) largely rely on single-variable linear filtering and are tuned for US operating conditions. PRAHARI's goal is a forecasting approach tailored to the datasets ISRO specified, producing calibrated, multi-horizon, probabilistic output rather than a single point estimate.
 
 ---
 
-## 11. Scientific Literature & Bibliography
+## Data Sources
 
-PRAHARI’s machine learning architecture is heavily grounded in peer-reviewed space physics and AI research. The following foundational texts and papers informed our feature engineering and modeling approach:
+PRAHARI uses the four data sources specified in PS-14, spanning roughly a full solar cycle (11 years).
 
-1. **Salesforce AI Research (2024).** *Moirai: A Foundation Model for Universal Time Series Forecasting.* [arXiv:2402.02592](https://arxiv.org/abs/2402.02592) - (Basis for our core Transformer architecture and mixture distribution loss).
-2. **Baker, D. N., et al. (1998).** *Coronal mass ejections, magnetic clouds, and relativistic magnetospheric electron events: ISTP.* Journal of Geophysical Research: Space Physics, 103(A8), 17279-17291. - (Established the definitive link between upstream solar wind drivers and downstream MeV electron fluxes).
-3. **Elkington, S. R., Hudson, M. K., & Chan, A. A. (2003).** *Resonant acceleration and radial diffusion of outer zone electrons in an asymmetric geomagnetic field.* Physics of Plasmas, 10(11), 4627-4638. - (Provided the mathematical basis for ULF Pc5 wave driven radial diffusion).
-4. **Rostoker, G., Skone, S., & Baker, D. N. (1998).** *On the origin of relativistic electrons in the magnetosphere associated with some geomagnetic storms.* Geophysical Research Letters, 25(19), 3701-3704. - (Confirmed that prolonged southward IMF $B_z$ combined with high solar wind speed generates the necessary Pc5 waves).
-5. **Fennell, J. F., et al. (2001).** *Deep dielectric charging: Satellite anomalies and space weather.* IEEE Transactions on Plasma Science. - (Defined the $10^3$ pfu danger threshold for internal electrostatic discharges).
-6. **Hu, Edward J., et al. (2021).** *LoRA: Low-Rank Adaptation of Large Language Models.* [arXiv:2106.09685](https://arxiv.org/abs/2106.09685) - (The methodology used to fine-tune Moirai efficiently with only 13.8M parameters).
-7. **O'Brien, T. P., et al. (2001).** *Which magnetic storms produce relativistic electrons at geosynchronous orbit?* Journal of Geophysical Research. - (Influenced our selection of Kp, Dst, and AE indices as critical state variables for the radiation belt).
-8. **Reeves, G. D., et al. (2003).** *Acceleration and loss of relativistic electrons during geomagnetic storms.* Geophysical Research Letters, 30(10). - (Demonstrated the competing mechanisms of electron loss vs acceleration, necessitating a probabilistic model).
-9. **Camporeale, E. (2019).** *The challenge of machine learning in space weather: Nowcasting and forecasting.* Space Weather, 17(8), 1166-1207. - (Highlighted the limitations of LSTMs and linear models in space weather, validating our choice of Foundation Models).
-10. **ISRO Problem Statement 14 (2024).** *Forecasting Energetic Particle Radiation Environment for ISRO's Geostationary Satellites.* ISRO Hackathon Official Documentation.
+| Source | Instrument | Variables | Native Resolution | Role |
+|---|---|---|---|---|
+| NASA GOES (13/14/15/16) | MAGED / EPEAD | Integral electron flux, >2 MeV (particles/cm²/s/sr) | 5 min | Target variable |
+| NASA Wind | SWE, MFI | Solar wind speed, proton density, IMF (B<sub>x</sub>, B<sub>y</sub>, B<sub>z</sub>) | 1 min | Upstream driver (Wind sits at L1, ~45–60 min ahead of Earth impact) |
+| Kyoto World Data Center | — | Kp, Dst, AE indices | Varies (aligned) | Global geomagnetic state |
+| ISRO GRASP / GSAT | — | Calibration data, 1–2 years | Project-specific | Indian-longitude (~74–93°E) bias correction |
+
+<!-- INSERT: GEO orbit / Van Allen belt illustration -->
 
 ---
+
+## Data Processing Pipeline
+
+Raw CDF (Common Data Format) files from GOES and Wind contain gaps, recalibration artifacts, and mismatched sampling rates that need to be resolved before the data can be used for training.
+
+```mermaid
+flowchart TD
+    A[GOES CDF files] --> E[cdflib parsing]
+    B[Wind CDF files] --> E
+    C[Kyoto WDC indices] --> F[Alignment]
+    D[ISRO GRASP/GSAT] --> F
+    E --> F
+    F --> G["Resample to 5-min cadence<br>(forward-fill + spline interpolation)"]
+    G --> H["log1p transform +<br>MinMaxScaler [1e-4, 1.0]"]
+    H --> I[Model-ready feature set]
+```
+
+**Key processing steps:**
+
+- **CDF parsing** — `cdflib` is used to extract daily CDF files directly in Python, avoiding manual format conversion.
+- **Resolution alignment** — GOES reports at 5-minute cadence and Wind at 1-minute cadence; all variables are resampled to a common 5-minute grid, using forward-fill for short gaps and spline interpolation for longer ones.
+- **Scaling** — Electron flux values span roughly five orders of magnitude (10¹–10⁵). A `log1p` transform followed by `MinMaxScaler` bounded to `[1e-4, 1.0]` keeps values strictly positive and numerically stable for the downstream log-normal distribution head, avoiding NaN gradients during training.
+
+---
+
+## Physics-Informed Features
+
+Rather than relying on the model to infer the relevant physical relationships from raw magnetic field data alone, several features are explicitly engineered from known space-physics mechanisms.
+
+| Feature | Physical meaning | Role in forecasting |
+|---|---|---|
+| Solar wind speed (V<sub>sw</sub>) | Upstream driver strength | Storm intensity / context |
+| IMF B<sub>z</sub> | Magnetic coupling orientation | Governs geomagnetic reconnection |
+| Kp | Global geomagnetic activity | Overall magnetospheric disturbance state |
+| Dst | Ring-current disturbance | Storm-phase indicator |
+| AE | Auroral electrojet activity | Energy deposition in the magnetotail |
+| Pc5 wave power | ULF radial-diffusion precursor | Precursor signal for electron acceleration |
+
+### ULF Pc5 Wave Power
+
+Outer-belt electrons gain relativistic energies partly through resonant interaction with Ultra-Low Frequency (Pc5) waves in the 1.5–10 mHz band. These waves are generated when solar wind pressure fluctuations perturb Earth's magnetic field, and they drive radial diffusion of electrons toward Earth, where the stronger field accelerates them:
+
+$$D_{LL} = D_{LL}^{M} + D_{LL}^{E}$$
+
+where $D_{LL}^{M}$ is the radial diffusion coefficient contribution from magnetic field fluctuations, and $D_{LL}^{E}$ is the corresponding contribution from electric field fluctuations. Because $D_{LL}^{M}$ depends strongly on ULF wave power, the magnitude of Pc5 activity is a useful precursor signal for subsequent electron acceleration.
+
+**Why it matters:** Pc5 activity can build up before the corresponding flux enhancement is visible in the GOES measurements, so it carries early information the raw electron flux time series alone does not.
+
+**PRAHARI implementation:** A Continuous Wavelet Transform (Morlet wavelet, via `PyWavelets`) is applied to the B<sub>z</sub> magnetometer series to isolate signal power in the 1.5–10 mHz band. Unlike an FFT, the CWT preserves time localization, allowing the onset of a Pc5 wave event to be identified. The resulting `Pc5_Wave_Power` series is fed into Moirai as a covariate alongside the other drivers.
+
+---
+
+## AI/ML Architecture
+
+### Why a foundation model
+
+| Requirement | LSTM / classical approach | Moirai |
+|---|---|---|
+| Long temporal context | Degrades over long sequences | Full-sequence self-attention |
+| Multivariate covariates | Requires custom architecture per input set | Handles arbitrary covariate counts natively |
+| Multiple forecast horizons | Typically trained separately per horizon | Single model, multiple horizons |
+| Forecast output | Usually point estimate | Native probabilistic (distribution) output |
+
+**Moirai** (Masked Encoder-based Universal Time Series Representation Learning, Salesforce AI Research) is a transformer-based foundation model pre-trained on the LOTSA time-series corpus. It represents input series as patches (tokens), similar in spirit to how BERT-style models tokenize text, which lets it condition forecasts on long historical context and an arbitrary number of covariates without architectural changes.
+
+### Fine-tuning with LoRA
+
+Fully fine-tuning a model the size of Moirai on 11 years of 5-minute-resolution data is computationally impractical outside a large GPU cluster. **LoRA (Low-Rank Adaptation)** freezes Moirai's pre-trained weights and injects small trainable rank-decomposition matrices into the attention layers.
+
+```mermaid
+flowchart LR
+    A[Pretrained Moirai weights] --> B[Freeze base weights]
+    B --> C[Insert LoRA adapters<br>in attention layers]
+    C --> D[Train adapters only<br>~13.8M parameters]
+    D --> E[Fine-tuned electron-flux<br>forecasting model]
+```
+
+This reduced the trainable parameter count to **13.8 million**, making it feasible to fine-tune on a single Apple Silicon (MPS) machine or a free-tier Colab/Kaggle T4 GPU in a few hours.
+
+### Probabilistic output
+
+Instead of a single-value prediction, the model head learns a mixture over several candidate distributions — Student-T, Normal, Log-Normal, and Negative Binomial — and weights them to match the empirical distribution of the electron flux target. From this, PRAHARI reports three quantiles:
+
+- **P50 (median)** — central forecast
+- **P90** — upper bound; used as the operational risk signal
+- **P10** — lower bound
+
+---
+
+## Forecast Output
+
+```mermaid
+flowchart LR
+    subgraph Forecast Band
+    direction TB
+    P90["P90 — upper bound (conservative)"]
+    P50["P50 — median forecast"]
+    P10["P10 — lower bound (best case)"]
+    end
+    P90 -.-> T["Compared against<br>10³ pfu charging threshold"]
+```
+
+The three forecast horizons (30 min, 6 hr, 12 hr) are produced simultaneously by the same model for a given input window. Operationally, the **P90 band is the value monitored against the deep-dielectric charging threshold** (~10³ pfu, per Fennell et al. 2001): if P90 crosses this threshold, the corresponding risk level is escalated so an operator can review the forecast and decide on any protective action. PRAHARI itself does not initiate any automated satellite command.
+
+---
+
+## Training Methodology & Results
+
+**Setup**
+
+| Item | Value |
+|---|---|
+| Framework | PyTorch Lightning + `uni2ts` |
+| Hardware | Apple Silicon (MPS) and NVIDIA T4 |
+| Batch size | 32, with gradient clipping |
+| Context length | 512 patches |
+| Prediction length | 128 patches (~10.6 hours at 5-min resolution) |
+| Loss | Packed Negative Log-Likelihood (NLL) |
+
+**MPS training note:** During development, an MPS-specific issue in `aten::_standard_gamma` produced NaN gradients in the log-normal distribution head during Lightning's validation loop, halting training at epoch 0. This was addressed by strictly bounding inputs to `[1e-4, 1.0]` via the scaler (guaranteeing positivity before the log transform) and by disabling the validation loop on Mac (`limit_val_batches=0`), monitoring training NLL instead.
+
+**Training loss (NLL) by epoch**
+
+| Epoch | NLL Loss | Δ from previous |
+|---:|---:|---:|
+| 0 | 21.597 | — |
+| 2 | 20.060 | −1.537 |
+| 5 | 19.547 | −0.513 |
+| 8 | 13.051 | −6.496 |
+| 10 | 5.222 | −7.829 |
+
+```mermaid
+xychart-beta
+    title "Training NLL Loss vs. Epoch"
+    x-axis [0, 2, 5, 8, 10]
+    y-axis "NLL Loss" 0 --> 25
+    line [21.597, 20.060, 19.547, 13.051, 5.222]
+```
+
+The most significant drop occurs between epochs 5 and 8, after which loss continues to decrease through epoch 10. This pattern is consistent with the LoRA adapters converging on a useful representation of the relationship between the engineered covariates (notably Pc5 wave power and IMF B<sub>z</sub>) and the electron flux target, though it should be read as an indicator of fit to the training objective rather than a validated accuracy metric — see [Limitations](#limitations--future-work).
+
+No RMSE, MAE, R², or classification-style accuracy metrics were computed for this submission; NLL on the training set is the only quantitative result reported here.
+
+---
+
+## System Architecture
+
+```mermaid
+flowchart TD
+    subgraph Sources["Data Sources"]
+    A1[NASA GOES]
+    A2[NASA Wind]
+    A3[Kyoto WDC]
+    A4[ISRO GRASP/GSAT]
+    end
+
+    Sources --> B[Data Ingestion<br>cdflib + Pandas]
+    B --> C[Cleaning & Alignment<br>5-min resample]
+    C --> D[Physics Feature Engineering<br>CWT → Pc5 Wave Power]
+    D --> E[Moirai + LoRA]
+    E --> F["Probabilistic Forecast<br>(P10/P50/P90)"]
+    F --> G["30 min / 6 hr / 12 hr"]
+    G --> H[Risk Classification Engine]
+    H --> I[FastAPI Inference Service]
+    I --> J[Node.js / Express Backend<br>MongoDB + WebSocket]
+    J --> K[React Operator Dashboard]
+```
+
+**Risk classification logic**
+
+```mermaid
+flowchart TD
+    A[P90 Forecast] --> B{"Below threshold\nwith margin?"}
+    B -->|Yes| G[GREEN]
+    B -->|No, approaching| C[AMBER]
+    A --> D{"Exceeds 10³ pfu\nthreshold?"}
+    D -->|Yes| R[RED]
+```
+
+<!-- INSERT: docs/images/system-architecture.png -->
+
+---
+
+## Operator Dashboard
+
+The React frontend (Recharts + Tailwind) is intended to let an operator assess GEO radiation risk without needing to interpret raw flux numbers directly.
+
+- Live and historical >2 MeV electron flux, plotted alongside the P10/P50/P90 forecast bands
+- A marked line at the ~10³ pfu deep-dielectric charging threshold
+- Per-satellite Green/Amber/Red risk indicator derived from the P90 forecast
+- Selectable 30-min / 6-hr / 12-hr horizon views
+- Visual alert state when the P90 band crosses the threshold, intended to prompt operator review
+
+<!-- INSERT: docs/images/dashboard.png -->
+<!-- INSERT: docs/images/forecast-example.png -->
+
+---
+
+## Technology Stack
+
+**ML / Scientific computing**
+Python · PyTorch · PyTorch Lightning · `uni2ts` · PyWavelets · Pandas · `cdflib`
+
+**Backend**
+FastAPI (inference service) · Node.js · Express
+
+**Frontend**
+React · Vite · TailwindCSS · Recharts
+
+**Data**
+GOES · Wind · Kyoto WDC · ISRO GRASP/GSAT
+
+**Model**
+Moirai (Salesforce) fine-tuned with LoRA
+
+---
+
+## Deployment
+
+```text
+Space Weather Data Feed
+        ↓
+Preprocessing Service (Python)
+        ↓
+Moirai Inference (FastAPI)
+        ↓
+Backend / WebSocket Layer (Node.js, MongoDB)
+        ↓
+Operator Dashboard (React)
+```
+
+- The fine-tuned Moirai (small variant) model runs inference for a 12-hour forecast in under 5 seconds on CPU in local testing, which is well within the 5-minute update cadence of the source data.
+- The FastAPI service can be containerized and deployed on standard container platforms (e.g., Docker on Kubernetes/ECS/Cloud Run); this has not yet been exercised in an ISRO operational environment.
+- MongoDB stores forecast and historical flux data as time-series JSON, enabling retrospective review of past storm periods.
+- Because the base model is open-source and fine-tuned locally, the resulting adapter weights are fully owned by the team/organization running the pipeline, reducing reliance on external proprietary forecasting services for this specific task.
+
+---
+
+## Limitations & Future Work
+
+- **Validation coverage** — Reported results are training-set NLL only; the model has not yet been evaluated on a held-out test set or benchmarked with standard forecast-accuracy metrics (RMSE, skill score, etc.) against historical storms.
+- **Storm-event validation** — Performance during specific major historical geomagnetic storms has not yet been separately analyzed.
+- **GRASP/GSAT calibration data** — Indian-longitude calibration currently uses 1–2 years of data; a longer calibration baseline would likely improve robustness of the longitude correction.
+- **Operational deployment** — The architecture is designed to be deployable, but has not been integrated with or tested against ISRO's live operational infrastructure.
+- **Uncertainty calibration** — The P10/P50/P90 quantiles are produced by the model's native distribution head; formal calibration checks (e.g., coverage analysis) have not yet been performed.
+- **Automated response** — The system reports risk levels only; it does not issue or execute satellite commands.
+
+Planned next steps include held-out and cross-storm validation, quantile calibration analysis, and testing the FastAPI service under a containerized deployment.
+
+---
+
+## References
+
+1. Salesforce AI Research (2024). *Moirai: A Foundation Model for Universal Time Series Forecasting*. [arXiv:2402.02592](https://arxiv.org/abs/2402.02592)
+2. Baker, D. N., et al. (1998). *Coronal mass ejections, magnetic clouds, and relativistic magnetospheric electron events: ISTP*. Journal of Geophysical Research: Space Physics, 103(A8), 17279–17291.
+3. Elkington, S. R., Hudson, M. K., & Chan, A. A. (2003). *Resonant acceleration and radial diffusion of outer zone electrons in an asymmetric geomagnetic field*. Physics of Plasmas, 10(11), 4627–4638.
+4. Rostoker, G., Skone, S., & Baker, D. N. (1998). *On the origin of relativistic electrons in the magnetosphere associated with some geomagnetic storms*. Geophysical Research Letters, 25(19), 3701–3704.
+5. Fennell, J. F., et al. (2001). *Deep dielectric charging: Satellite anomalies and space weather*. IEEE Transactions on Plasma Science.
+6. Hu, E. J., et al. (2021). *LoRA: Low-Rank Adaptation of Large Language Models*. [arXiv:2106.09685](https://arxiv.org/abs/2106.09685)
+7. O'Brien, T. P., et al. (2001). *Which magnetic storms produce relativistic electrons at geosynchronous orbit?* Journal of Geophysical Research.
+8. Reeves, G. D., et al. (2003). *Acceleration and loss of relativistic electrons during geomagnetic storms*. Geophysical Research Letters, 30(10).
+9. Camporeale, E. (2019). *The challenge of machine learning in space weather: Nowcasting and forecasting*. Space Weather, 17(8), 1166–1207.
+10. ISRO Problem Statement 14 (2024). *Forecasting Energetic Particle Radiation Environment for ISRO's Geostationary Satellites*. ISRO Hackathon Official Documentation.
+
+---
+
 <div align="center">
-  <h3>Built with ❤️ for ISRO by Team Prahari</h3>
-  <p>Pioneering the future of Space Weather Intelligence.</p>
+<sub>Team PRAHARI — ISRO Hackathon submission for Problem Statement 14</sub>
 </div>
